@@ -20,12 +20,7 @@ public class InventoryService {
                     addInvesntory();
                     break;
                 case 2:
-                    Inventory inventory = getInventorybyBookId();
-                    if (inventory != null) {
-                        System.out.println(inventory);
-                    } else {
-                        System.out.println("No inventory found for book ID "); //TODO: add book ID to message
-                    }
+                    getInventorybyBookId();
                     break;
                 case 3:
                     borrowBook();
@@ -33,7 +28,7 @@ public class InventoryService {
                 case 4:
                     returnBook();
                     break;
-                case 5:
+                case 0:
                     System.out.println("Returning to main menu...");
                     running = false;
                     break;
@@ -65,26 +60,55 @@ public class InventoryService {
         }
     }
 
-    public Inventory getInventorybyBookId() {
+    public void getInventorybyBookId() {
         System.out.print("Book ID to view inventory: ");
         int bookId = sc.nextInt();
-        return inventoryStore.readAll().values().stream()
-                .filter(inv -> inv.getBookId() == bookId && inv.getStatus() == enums.BookStatus.AVAILABLE)
-                .findFirst()
-                .orElse(null);
+
+        var inventories = inventoryStore.readAll().values().stream()
+                .filter(inv -> inv.getBookId() == bookId)
+                .toList();
+
+        if (inventories.isEmpty()) {
+            System.out.println("No inventory found for book ID: " + bookId);
+            return;
+        }
+
+        // Print table header
+        System.out.println("\n" + String.format("%-10s %-10s %-15s %-20s %-15s",
+                "Copy ID", "Book ID", "Status", "Borrowed By", "Borrow Date"));
+        System.out.println("-".repeat(70));
+
+        // Print table rows
+        for (Inventory inv : inventories) {
+            String borrowedBy = inv.getBorrowedByPatronId() != null ?
+                    String.valueOf(inv.getBorrowedByPatronId()) : "N/A";
+            String borrowDate = inv.getBorrowDate() != null ?
+                    inv.getBorrowDate().toString() : "N/A";
+
+            System.out.println(String.format("%-10s %-10s %-15s %-20s %-15s",
+                    inv.getCopyId(), inv.getBookId(), inv.getStatus(), borrowedBy, borrowDate));
+        }
     }
 
     public void borrowBook() {
-        System.out.println("Enter patron ID: ");
+        System.out.print("Enter patron ID: ");
         int patronId = sc.nextInt();
-        Inventory inventory = getInventorybyBookId();
+        System.out.print("Enter book ID to borrow: ");
+        int bookId = sc.nextInt();
+
+        Inventory inventory = inventoryStore.readAll().values().stream()
+                .filter(inv -> inv.getBookId() == bookId && inv.getStatus() == enums.BookStatus.AVAILABLE)
+                .findFirst()
+                .orElse(null);
+
         if (inventory != null) {
             inventory.setStatus(enums.BookStatus.BORROWED);
             inventory.setBorrowedByPatronId(patronId);
             inventory.setBorrowDate(java.time.LocalDate.now());
             inventoryStore.update(inventory.getCopyId(), inventory);
+            System.out.println("Book borrowed successfully! Copy ID: " + inventory.getCopyId());
         } else {
-            System.out.println("No available copy for book ID "); //TODO: add book ID to message
+            System.out.println("No available copy for book ID: " + bookId);
         }
     }
 

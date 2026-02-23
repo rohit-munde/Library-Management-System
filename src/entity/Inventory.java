@@ -38,17 +38,17 @@ public class Inventory {
         this.status = status;
     }
 
-//    public Integer getBorrowedByPatronId() {
-//        return borrowedByPatronId;
-//    }
+    public Integer getBorrowedByPatronId() {
+        return borrowedByPatronId;
+    }
 
     public void setBorrowedByPatronId(Integer patronId) {
         this.borrowedByPatronId = patronId;
     }
 
-//    public LocalDate getBorrowDate() {
-//        return borrowDate;
-//    }
+    public LocalDate getBorrowDate() {
+        return borrowDate;
+    }
 
     public void setBorrowDate(LocalDate borrowDate) {
         this.borrowDate = borrowDate;
