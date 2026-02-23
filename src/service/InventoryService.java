@@ -1,11 +1,12 @@
 package service;
 
 import entity.Inventory;
+import service.interfaces.IInventoryService;
 import util.DataStore;
 
 import java.util.Scanner;
 
-public class InventoryService {
+public class InventoryService implements IInventoryService {
     private final DataStore<Inventory> inventoryStore = new DataStore<>();
     private final Scanner sc = new Scanner(System.in);
 
@@ -17,10 +18,10 @@ public class InventoryService {
             int choice = sc.nextInt();
             switch (choice) {
                 case 1:
-                    addInvesntory();
+                    addInventory();
                     break;
                 case 2:
-                    getInventorybyBookId();
+                    viewInventoryByBookId();
                     break;
                 case 3:
                     borrowBook();
@@ -49,7 +50,7 @@ public class InventoryService {
         System.out.print("Enter your choice: ");
     }
 
-    public void addInvesntory() {
+    public void addInventory() {
         System.out.print("Book ID: ");
         int bookId = sc.nextInt();
         System.out.print("Number of copies to add: ");
@@ -60,7 +61,7 @@ public class InventoryService {
         }
     }
 
-    public void getInventorybyBookId() {
+    public void viewInventoryByBookId() {
         System.out.print("Book ID to view inventory: ");
         int bookId = sc.nextInt();
 
@@ -74,8 +75,8 @@ public class InventoryService {
         }
 
         // Print table header
-        System.out.println("\n" + String.format("%-10s %-10s %-15s %-20s %-15s",
-                "Copy ID", "Book ID", "Status", "Borrowed By", "Borrow Date"));
+        System.out.printf("\n%-10s %-10s %-15s %-20s %-15s%n",
+                "Copy ID", "Book ID", "Status", "Borrowed By", "Borrow Date");
         System.out.println("-".repeat(70));
 
         // Print table rows
@@ -85,8 +86,8 @@ public class InventoryService {
             String borrowDate = inv.getBorrowDate() != null ?
                     inv.getBorrowDate().toString() : "N/A";
 
-            System.out.println(String.format("%-10s %-10s %-15s %-20s %-15s",
-                    inv.getCopyId(), inv.getBookId(), inv.getStatus(), borrowedBy, borrowDate));
+            System.out.printf("%-10s %-10s %-15s %-20s %-15s%n",
+                    inv.getCopyId(), inv.getBookId(), inv.getStatus(), borrowedBy, borrowDate);
         }
     }
 
